@@ -1,0 +1,8 @@
+docker build -t robofin-application .
+docker tag robofin-application us-central1-docker.pkg.dev/skilful-alpha-455807-q8/fin-robo/robofin-application:latest
+docker push us-central1-docker.pkg.dev/skilful-alpha-455807-q8/fin-robo/robofin-application:latest
+
+docker build -t asia-southeast1-docker.pkg.dev/inbound-trilogy-461608-e1/image/robofin-frontend -f .\Dockerfile .
+docker run -p 8080:8080 --name front asia-southeast1-docker.pkg.dev/inbound-trilogy-461608-e1/image/robofin-frontend
+docker push asia-southeast1-docker.pkg.dev/inbound-trilogy-461608-e1/image/robofin-frontend
+gcloud run deploy robofin-frontend --allow-unauthenticated --cpu-boost --ingress all --max-instances 10 --min-instances 0 --region asia-southeast1 --service-account robofin-frontend@inbound-trilogy-461608-e1.iam.gserviceaccount.com --timeout 540 --cpu 1 --memory 512Mi --port 8080 --image asia-southeast1-docker.pkg.dev/inbound-trilogy-461608-e1/image/robofin-frontend:latest

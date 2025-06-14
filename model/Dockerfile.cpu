@@ -1,0 +1,34 @@
+FROM continuumio/miniconda3
+WORKDIR /app
+RUN printf "name: grace_env\n\
+channels:\n\
+  - pytorch\n\
+  - conda-forge\n\
+  - defaults\n\
+dependencies:\n\
+  - nltk=3.6.5\n\
+  - pandas=1.3.4\n\
+  - pip=21.2.4\n\
+  - python=3.9.7\n\
+  - pip:\n\
+    - einops==0.4.1\n\
+    - higher==0.2.1\n\
+    - hydra-core==1.2.0\n\
+    - numpy==1.24.3\n\
+    - torch==2.0.0\n\
+    - transformers==4.49.0\n\
+    - wandb==0.13.2\n\
+    - datasets==2.10.1\n\
+    - jsonlines==3.1.0\n\
+    - sentencepiece==0.1.97\n\
+    - matplotlib==3.7.2\n\
+    - scikit-learn==1.6.1\n\
+    - fastapi==0.115.12\n\
+    - uvicorn==0.34.3\n" > environment.yml
+
+RUN conda env create --name grace_env --file environment.yml
+COPY . ./
+SHELL ["conda", "run", "--no-capture-output", "-n", "grace_env", "/bin/bash", "-c"]
+RUN pip install -e .
+EXPOSE 8000
+ENTRYPOINT conda run --no-capture-output -n grace_env uvicorn app:app --host 0.0.0.0 --port 8000
